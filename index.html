@@ -194,7 +194,8 @@ if(Ext.isIE)
 Ext.state.Manager.setProvider(Ext.create('Ext.state.CookieProvider'));
 Ext.tip.QuickTipManager.init();
 
-PP.saveRecord=function(r,callback){	
+PP.saveRecord=function(r,callback){
+	var do_save = true;
 	// if system is being set to 
 	if(typeof r.modified['status']!='undefined' && r.data.status=='production')
 	{
@@ -230,6 +231,41 @@ PP.saveRecord=function(r,callback){
 			}
 		}
 	}
+	else if (typeof r.modified['status']!='undefined' && r.data.status=='provision')
+	{
+		if (r.data.provision_config == 'undefined')
+		{
+			Ext.Msg.hide();
+			r.reject();
+			var. sv=Ext.getCmp('system_view');
+			sv.getForm().loadRecord(r);
+			Ext.Msg.alert('Update Failed', 'This system could not be set to the provision state because no provisioning configuration has been selected.  Changes have been reverted.');
+			return;
+		}
+		else if (r.data.is_virtual == 'true')
+		{
+			Ext.Msg.hide();
+			r.reject();
+			var. sv=Ext.getCmp('system_view');
+			sv.getForm().loadRecord(r);
+			Ext.Msg.alert('Update Failed', 'This system could not be set to the provision state because it is a virtual machine.  Changes have been reverted.');
+			return;
+		}
+
+		Ext.Msg.hide();
+		Ext.Msg.confirm('Confirm', 'Are you sure you want to provision this system?<br>This cannot be undone', function(btn)
+		{
+			if (btn == 'no')
+			{
+				do_save = false;
+			}
+		}, this);
+	}
+
+	if (!do_save) {
+	   return;
+	}
+	
 	r.save({
 		callback: function(t,op){
 			if(op.success)
