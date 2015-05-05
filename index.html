@@ -716,8 +716,9 @@ Ext.onReady(function(){
 		sys_grid.addSearchBar();
 		var new_bar=sys_grid.getDockedItems('toolbar[dock=top]')[0];
 		new_bar.items.items[1].setValue('status');
-		new_bar.items.items[2].setValue('!=');
-		new_bar.items.items[3].setValue('decommissioned');
+		new_bar.items.items[2].setValue('!~');
+		new_bar.items.items[3].setValue('^(decommissioned|disposed)$');
+
 	}
 	var quicklink_keys=Object.keys(PP.quicklinks);
 	for(var i=0; i < quicklink_keys.length ; i++){
